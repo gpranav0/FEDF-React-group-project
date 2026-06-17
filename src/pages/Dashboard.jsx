@@ -1,7 +1,16 @@
-import { Wallet, TrendingUp, TrendingDown, PiggyBank, BarChart3, Plus, Target } from 'lucide-react';
+import { useMemo } from 'react';
+import { Wallet, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import StatCard from '../components/dashboard/StatCard';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
 import SavingsProgressCard from '../components/dashboard/SavingsProgressCard';
+import FinancialHealthScore from '../components/dashboard/FinancialHealthScore';
+import QuickActions from '../components/dashboard/QuickActions';
+import ActivityFeed from '../components/dashboard/ActivityFeed';
+import SmartInsights from '../components/dashboard/SmartInsights';
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MOCK_MONTHLY_INCOME = 8250;
 
 export default function Dashboard() {
   const currentDate = new Date();
@@ -15,10 +24,61 @@ export default function Dashboard() {
   const hour = currentDate.getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
+  // Load expenses for the mini chart
+  const monthlyChartData = useMemo(() => {
+    let expenses = [];
+    try {
+      const raw = localStorage.getItem('fintrack_expenses');
+      if (raw) expenses = JSON.parse(raw);
+    } catch {}
+
+    const now = new Date();
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        month: MONTH_NAMES[d.getMonth()],
+        monthIdx: d.getMonth(),
+        year: d.getFullYear(),
+        Income: MOCK_MONTHLY_INCOME,
+        Expenses: 0,
+      });
+    }
+
+    expenses.forEach(exp => {
+      const date = new Date(exp.date);
+      const entry = months.find(m => m.monthIdx === date.getMonth() && m.year === date.getFullYear());
+      if (entry) entry.Expenses += exp.amount;
+    });
+
+    // Round for cleanliness
+    months.forEach(m => m.Expenses = Math.round(m.Expenses * 100) / 100);
+    return months;
+  }, []);
+
+  // Load dynamic stats from localStorage
+  const stats = useMemo(() => {
+    let expenses = [];
+    let goals = [];
+    try { expenses = JSON.parse(localStorage.getItem('fintrack_expenses') || '[]'); } catch {}
+    try { goals = JSON.parse(localStorage.getItem('fintrack_goals') || '[]'); } catch {}
+
+    const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
+    const totalSavings = goals.reduce((s, g) => s + g.currentAmount, 0);
+    const balance = MOCK_MONTHLY_INCOME - totalExpenses;
+
+    return {
+      income: `$${MOCK_MONTHLY_INCOME.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+      expenses: `$${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      balance: `$${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      savings: `$${totalSavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    };
+  }, []);
+
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-6 pb-8">
       {/* Section 1: Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 animate-fade-in">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{greeting}, John 👋</h1>
           <p className="text-slate-500 mt-1">Here's your financial overview for today.</p>
@@ -28,60 +88,68 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="flex flex-wrap gap-3">
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium text-sm">
-          <Plus className="w-4 h-4" /> Add Expense
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">
-          <Plus className="w-4 h-4" /> Create Budget
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium text-sm">
-          <Target className="w-4 h-4" /> Add Savings Goal
-        </button>
+      {/* Section 2: Quick Actions */}
+      <QuickActions />
+
+      {/* Section 3: Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="animate-fade-in animate-stagger-1">
+          <StatCard 
+            title="Total Income" 
+            amount={stats.income}
+            icon={TrendingUp} 
+            trend="up" 
+            trendValue="12.5%" 
+            iconBg="bg-emerald-50" 
+            iconColor="text-emerald-500" 
+          />
+        </div>
+        <div className="animate-fade-in animate-stagger-2">
+          <StatCard 
+            title="Total Expenses" 
+            amount={stats.expenses}
+            icon={TrendingDown} 
+            trend="down" 
+            trendValue="4.2%" 
+            iconBg="bg-red-50" 
+            iconColor="text-red-500" 
+          />
+        </div>
+        <div className="animate-fade-in animate-stagger-3">
+          <StatCard 
+            title="Current Balance" 
+            amount={stats.balance}
+            icon={Wallet} 
+            trend="up" 
+            trendValue="8.1%" 
+            iconBg="bg-blue-50" 
+            iconColor="text-blue-500" 
+          />
+        </div>
+        <div className="animate-fade-in animate-stagger-4">
+          <StatCard 
+            title="Total Savings" 
+            amount={stats.savings}
+            icon={PiggyBank} 
+            trend="up" 
+            trendValue="2.4%" 
+            iconBg="bg-purple-50" 
+            iconColor="text-purple-500" 
+          />
+        </div>
       </div>
 
-      {/* Section 2: Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Total Income" 
-          amount="$8,250.00" 
-          icon={TrendingUp} 
-          trend="up" 
-          trendValue="12.5%" 
-          iconBg="bg-emerald-50" 
-          iconColor="text-emerald-500" 
-        />
-        <StatCard 
-          title="Total Expenses" 
-          amount="$3,420.50" 
-          icon={TrendingDown} 
-          trend="down" 
-          trendValue="4.2%" 
-          iconBg="bg-red-50" 
-          iconColor="text-red-500" 
-        />
-        <StatCard 
-          title="Current Balance" 
-          amount="$24,500.80" 
-          icon={Wallet} 
-          trend="up" 
-          trendValue="8.1%" 
-          iconBg="bg-blue-50" 
-          iconColor="text-blue-500" 
-        />
-        <StatCard 
-          title="Total Savings" 
-          amount="$14,800.00" 
-          icon={PiggyBank} 
-          trend="up" 
-          trendValue="2.4%" 
-          iconBg="bg-purple-50" 
-          iconColor="text-purple-500" 
-        />
+      {/* Section 4: Financial Health + Activity Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <FinancialHealthScore />
+        </div>
+        <div className="lg:col-span-2">
+          <SmartInsights />
+        </div>
       </div>
 
-      {/* Section 3: Two Column Layout */}
+      {/* Section 5: Transactions + Savings Goals */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <RecentTransactions />
@@ -91,36 +159,43 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Section 4: Monthly Financial Overview */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-          <div>
-            <h3 className="text-lg font-bold text-slate-900">Monthly Financial Overview</h3>
-            <p className="text-sm text-slate-500">June 2026</p>
-          </div>
-          <div className="flex items-center gap-6">
-            <div>
-              <p className="text-xs text-slate-500 mb-1">Income</p>
-              <p className="font-bold text-emerald-600 text-lg">$8,250</p>
+      {/* Section 6: Monthly Chart + Activity Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 card-hover animate-fade-in">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Monthly Overview</h3>
+                <p className="text-sm text-slate-500">Income vs Expenses — Last 6 Months</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <span className="text-xs text-slate-500 font-medium">Income</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-blue-500" />
+                  <span className="text-xs text-slate-500 font-medium">Expenses</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-slate-500 mb-1">Expenses</p>
-              <p className="font-bold text-red-600 text-lg">$3,420</p>
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 mb-1">Savings Rate</p>
-              <p className="font-bold text-primary text-lg">58%</p>
-            </div>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={monthlyChartData} barCategoryGap="20%">
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                <Tooltip
+                  contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                  formatter={(value) => [`$${value.toLocaleString()}`, undefined]}
+                />
+                <Bar dataKey="Income" fill="#10b981" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Expenses" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
-        
-        {/* Chart Placeholder */}
-        <div className="h-72 w-full border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center bg-slate-50/50 group cursor-pointer hover:bg-slate-50 transition-colors">
-          <div className="p-4 bg-white rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
-            <BarChart3 className="w-8 h-8 text-slate-300" />
-          </div>
-          <p className="text-slate-600 font-medium">Interactive Chart Area</p>
-          <p className="text-sm text-slate-400 mt-1">Chart implementation goes here</p>
+        <div>
+          <ActivityFeed />
         </div>
       </div>
     </div>

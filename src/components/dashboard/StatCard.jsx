@@ -4,7 +4,7 @@ export default function StatCard({ title, amount, icon: Icon, trend, trendValue,
   const isPositive = trend === 'up';
   
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 card-hover group">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-slate-500">{title}</h3>
         <div className={`p-2 rounded-xl ${iconBg} ${iconColor} group-hover:scale-110 transition-transform`}>

@@ -10,7 +10,7 @@ const TRANSACTIONS = [
 
 export default function RecentTransactions() {
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full card-hover">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-900">Recent Transactions</h3>
         <button className="text-sm font-medium text-primary hover:text-blue-700 transition-colors">View All</button>

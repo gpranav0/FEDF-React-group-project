@@ -4,6 +4,7 @@ import BudgetStats from '../components/budgets/BudgetStats';
 import BudgetCard from '../components/budgets/BudgetCard';
 import BudgetFormModal from '../components/budgets/BudgetFormModal';
 import BudgetInsights from '../components/budgets/BudgetInsights';
+import EmptyState from '../components/ui/EmptyState';
 
 export default function Budgets() {
   const [budgets, setBudgets] = useState(() => {
@@ -150,22 +151,13 @@ export default function Budgets() {
         </>
       ) : (
         /* Empty State */
-        <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl shadow-sm border border-slate-100 text-center px-4">
-          <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-            <PiggyBank className="w-12 h-12 text-primary" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">No budgets set yet</h2>
-          <p className="text-slate-500 max-w-md mb-8">
-            Take control of your finances by setting monthly limits for different categories. 
-            We'll track your spending and help you stay on target.
-          </p>
-          <button 
-            onClick={openAddModal}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md font-medium"
-          >
-            <Plus className="w-5 h-5" /> Create Your First Budget
-          </button>
-        </div>
+        <EmptyState
+          icon={PiggyBank}
+          title="No budgets set yet"
+          description="Take control of your finances by setting monthly limits for different categories. We'll track your spending and help you stay on target."
+          actionLabel="✨ Create Your First Budget"
+          onAction={openAddModal}
+        />
       )}
 
       {/* Modal */}

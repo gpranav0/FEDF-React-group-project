@@ -33,7 +33,7 @@ export default function GoalCard({ goal, onEdit, onDelete, onAddFunds }) {
   else if (diffDays < 0) statusColor = "bg-red-500";
 
   return (
-    <div className={`bg-white p-6 rounded-2xl shadow-sm border ${isCompleted ? 'border-emerald-200 bg-emerald-50/10' : 'border-slate-100'} flex flex-col h-full group transition-all hover:shadow-md`}>
+    <div className={`bg-white p-6 rounded-2xl shadow-sm border ${isCompleted ? 'border-emerald-200 bg-emerald-50/10' : 'border-slate-100'} flex flex-col h-full group card-hover-lift`}>
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">

@@ -4,6 +4,7 @@ import GoalStats from '../components/goals/GoalStats';
 import GoalCard from '../components/goals/GoalCard';
 import GoalFormModal from '../components/goals/GoalFormModal';
 import GoalInsights from '../components/goals/GoalInsights';
+import EmptyState from '../components/ui/EmptyState';
 
 const DEFAULT_GOALS = [
   { id: 1, name: 'Emergency Fund', category: 'Emergency Fund', targetAmount: 10000, currentAmount: 4500, targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0] },
@@ -126,22 +127,13 @@ export default function SavingsGoals() {
         </>
       ) : (
         /* Empty State */
-        <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl shadow-sm border border-slate-100 text-center px-4">
-          <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-            <Target className="w-12 h-12 text-primary" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">No savings goals yet</h2>
-          <p className="text-slate-500 max-w-md mb-8">
-            Setting targets is the first step towards turning the invisible into the visible. 
-            Create a goal to start building your future.
-          </p>
-          <button 
-            onClick={openAddModal}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md font-medium"
-          >
-            <Plus className="w-5 h-5" /> Create Your First Goal
-          </button>
-        </div>
+        <EmptyState
+          icon={Target}
+          title="No savings goals yet"
+          description="Setting targets is the first step towards turning the invisible into the visible. Create a goal to start building your future."
+          actionLabel="🎯 Create Your First Goal"
+          onAction={openAddModal}
+        />
       )}
 
       {/* Modal */}

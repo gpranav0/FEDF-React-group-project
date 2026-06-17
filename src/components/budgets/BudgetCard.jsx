@@ -19,7 +19,7 @@ export default function BudgetCard({ budget, spent, onEdit, onDelete }) {
   }
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full card-hover-lift">
       <div className="flex justify-between items-start mb-4">
         <div className={`px-3 py-1 rounded-full text-sm font-medium ${bgLight} ${textColor}`}>
           {budget.category}

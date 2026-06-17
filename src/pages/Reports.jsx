@@ -7,6 +7,7 @@ import BudgetAnalysis from '../components/reports/BudgetAnalysis';
 import SavingsAnalysis from '../components/reports/SavingsAnalysis';
 import MonthlyBreakdownTable from '../components/reports/MonthlyBreakdownTable';
 import FinancialInsights from '../components/reports/FinancialInsights';
+import EmptyState from '../components/ui/EmptyState';
 
 const MOCK_MONTHLY_INCOME = 8250.00;
 
@@ -140,6 +141,22 @@ export default function Reports() {
   const exportPDF = () => {
     window.print();
   };
+
+  if (expenses.length === 0 && budgets.length === 0 && goals.length === 0) {
+    return (
+      <div className="space-y-8 pb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Financial Reports</h1>
+          <p className="text-slate-500 mt-1">Comprehensive overview of your financial health.</p>
+        </div>
+        <EmptyState
+          icon={FileText}
+          title="No data to report"
+          description="Your financial reports will appear here once you start adding expenses, setting budgets, and creating savings goals."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-8 print:space-y-6 print:pb-0 print:bg-white print:text-black">

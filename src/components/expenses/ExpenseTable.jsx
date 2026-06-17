@@ -1,11 +1,14 @@
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, Receipt } from 'lucide-react';
+import EmptyState from '../ui/EmptyState';
 
 export default function ExpenseTable({ expenses, onEdit, onDelete }) {
   if (expenses.length === 0) {
     return (
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center text-slate-500">
-        No expenses found. Add your first expense to get started.
-      </div>
+      <EmptyState
+        icon={Receipt}
+        title="No expenses found"
+        description="Start tracking your spending by adding your first expense. We'll help you understand where your money goes."
+      />
     );
   }
 
