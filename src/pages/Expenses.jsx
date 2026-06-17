@@ -3,6 +3,7 @@ import { Plus, Search, Filter } from 'lucide-react';
 import ExpenseStats from '../components/expenses/ExpenseStats';
 import ExpenseTable from '../components/expenses/ExpenseTable';
 import ExpenseFormModal from '../components/expenses/ExpenseFormModal';
+import { logActivity } from '../utils/activityLogger';
 
 const DEFAULT_EXPENSES = [
   { id: 1, title: 'Weekly Groceries', category: 'Food', amount: 120.50, date: new Date().toISOString().split('T')[0], notes: 'Whole foods' },
@@ -38,20 +39,33 @@ export default function Expenses() {
   }, [expenses]);
 
   const handleSaveExpense = (expenseData) => {
+    let settings = {};
+    try { settings = JSON.parse(localStorage.getItem('fintrack_settings') || '{}'); } catch {}
+    const currencySymbol = settings?.preferences?.currency?.match(/\((.*?)\)/)?.[1] || '$';
+
     if (expenseData.id) {
       setExpenses(expenses.map(exp => exp.id === expenseData.id ? expenseData : exp));
+      logActivity('expense_update', 'Updated Expense', `${expenseData.title} updated to ${currencySymbol}${parseFloat(expenseData.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}`);
     } else {
       const newExpense = {
         ...expenseData,
         id: Date.now()
       };
       setExpenses([...expenses, newExpense]);
+      logActivity('expense_add', 'Added Expense', `${expenseData.category} Expense - ${currencySymbol}${parseFloat(expenseData.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}`);
     }
   };
 
   const handleDeleteExpense = (id) => {
     if (window.confirm('Are you sure you want to delete this expense?')) {
-      setExpenses(expenses.filter(exp => exp.id !== id));
+      const exp = expenses.find(e => e.id === id);
+      setExpenses(expenses.filter(e => e.id !== id));
+      if (exp) {
+        let settings = {};
+        try { settings = JSON.parse(localStorage.getItem('fintrack_settings') || '{}'); } catch {}
+        const currencySymbol = settings?.preferences?.currency?.match(/\((.*?)\)/)?.[1] || '$';
+        logActivity('expense_delete', 'Deleted Expense', `Removed ${exp.title} (${currencySymbol}${parseFloat(exp.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })})`);
+      }
     }
   };
 

@@ -8,6 +8,7 @@ import SavingsAnalysis from '../components/reports/SavingsAnalysis';
 import MonthlyBreakdownTable from '../components/reports/MonthlyBreakdownTable';
 import FinancialInsights from '../components/reports/FinancialInsights';
 import EmptyState from '../components/ui/EmptyState';
+import { logActivity } from '../utils/activityLogger';
 
 const MOCK_MONTHLY_INCOME = 8250.00;
 
@@ -136,9 +137,11 @@ export default function Reports() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    logActivity('report_export', 'Exported Report', 'Downloaded financial data as CSV');
   };
 
   const exportPDF = () => {
+    logActivity('report_export', 'Exported Report', 'Printed/Saved financial report as PDF');
     window.print();
   };
 

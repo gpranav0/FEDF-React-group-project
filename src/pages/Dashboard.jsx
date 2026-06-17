@@ -7,30 +7,22 @@ import SavingsProgressCard from '../components/dashboard/SavingsProgressCard';
 import FinancialHealthScore from '../components/dashboard/FinancialHealthScore';
 import QuickActions from '../components/dashboard/QuickActions';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
-import SmartInsights from '../components/dashboard/SmartInsights';
+import InsightsPanel from '../components/dashboard/InsightsPanel';
+import DashboardHero from '../components/dashboard/DashboardHero';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MOCK_MONTHLY_INCOME = 8250;
 
 export default function Dashboard() {
-  const currentDate = new Date();
-  const dateString = currentDate.toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  
-  const hour = currentDate.getHours();
-  const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
-
   // Load expenses for the mini chart
   const monthlyChartData = useMemo(() => {
     let expenses = [];
     try {
       const raw = localStorage.getItem('fintrack_expenses');
       if (raw) expenses = JSON.parse(raw);
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
 
     const now = new Date();
     const months = [];
@@ -60,33 +52,38 @@ export default function Dashboard() {
   const stats = useMemo(() => {
     let expenses = [];
     let goals = [];
-    try { expenses = JSON.parse(localStorage.getItem('fintrack_expenses') || '[]'); } catch {}
-    try { goals = JSON.parse(localStorage.getItem('fintrack_goals') || '[]'); } catch {}
+    let settings = {};
+    try { expenses = JSON.parse(localStorage.getItem('fintrack_expenses') || '[]'); } catch (e) { console.error(e); }
+    try { goals = JSON.parse(localStorage.getItem('fintrack_goals') || '[]'); } catch (e) { console.error(e); }
+    try { settings = JSON.parse(localStorage.getItem('fintrack_settings') || '{}'); } catch (e) { console.error(e); }
 
     const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
     const totalSavings = goals.reduce((s, g) => s + g.currentAmount, 0);
     const balance = MOCK_MONTHLY_INCOME - totalExpenses;
+    
+    // Extract symbol (e.g. "USD ($)" -> "$", "INR (₹)" -> "₹")
+    const prefCurrency = settings?.preferences?.currency || 'USD ($)';
+    const currencySymbol = prefCurrency.match(/\((.*?)\)/)?.[1] || '$';
 
     return {
-      income: `$${MOCK_MONTHLY_INCOME.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
-      expenses: `$${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      balance: `$${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      savings: `$${totalSavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      currencySymbol,
+      rawBalance: balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      rawSavings: totalSavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      income: `${currencySymbol}${MOCK_MONTHLY_INCOME.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+      expenses: `${currencySymbol}${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      balance: `${currencySymbol}${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      savings: `${currencySymbol}${totalSavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     };
   }, []);
 
   return (
     <div className="space-y-6 pb-8">
-      {/* Section 1: Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 animate-fade-in">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{greeting}, John 👋</h1>
-          <p className="text-slate-500 mt-1">Here's your financial overview for today.</p>
-        </div>
-        <div className="text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm inline-flex items-center gap-2">
-          <span>{dateString}</span>
-        </div>
-      </div>
+      {/* Section 1: Hero Banner */}
+      <DashboardHero 
+        balance={stats.rawBalance} 
+        savings={stats.rawSavings} 
+        currencySymbol={stats.currencySymbol} 
+      />
 
       {/* Section 2: Quick Actions */}
       <QuickActions />
@@ -145,7 +142,7 @@ export default function Dashboard() {
           <FinancialHealthScore />
         </div>
         <div className="lg:col-span-2">
-          <SmartInsights />
+          <InsightsPanel />
         </div>
       </div>
 

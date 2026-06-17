@@ -5,6 +5,7 @@ import GoalCard from '../components/goals/GoalCard';
 import GoalFormModal from '../components/goals/GoalFormModal';
 import GoalInsights from '../components/goals/GoalInsights';
 import EmptyState from '../components/ui/EmptyState';
+import { logActivity } from '../utils/activityLogger';
 
 const DEFAULT_GOALS = [
   { id: 1, name: 'Emergency Fund', category: 'Emergency Fund', targetAmount: 10000, currentAmount: 4500, targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0] },
@@ -42,20 +43,28 @@ export default function SavingsGoals() {
   const goalsCompleted = useMemo(() => goals.filter(g => g.currentAmount >= g.targetAmount).length, [goals]);
 
   const handleSaveGoal = (goalData) => {
+    let settings = {};
+    try { settings = JSON.parse(localStorage.getItem('fintrack_settings') || '{}'); } catch {}
+    const currencySymbol = settings?.preferences?.currency?.match(/\((.*?)\)/)?.[1] || '$';
+
     if (goalData.id) {
       setGoals(goals.map(g => g.id === goalData.id ? goalData : g));
+      logActivity('goal_update', 'Updated Goal', `${goalData.name} adjusted. Target: ${currencySymbol}${parseFloat(goalData.targetAmount).toLocaleString()}`);
     } else {
       const newGoal = {
         ...goalData,
         id: Date.now()
       };
       setGoals([...goals, newGoal]);
+      logActivity('goal_add', 'Created Goal', `New goal: ${goalData.name} for ${currencySymbol}${parseFloat(goalData.targetAmount).toLocaleString()}`);
     }
   };
 
   const handleDeleteGoal = (id) => {
     if (window.confirm('Are you sure you want to delete this goal?')) {
+      const goal = goals.find(g => g.id === id);
       setGoals(goals.filter(g => g.id !== id));
+      if (goal) logActivity('goal_delete', 'Deleted Goal', `Removed goal: ${goal.name}`);
     }
   };
 

@@ -5,6 +5,7 @@ import BudgetCard from '../components/budgets/BudgetCard';
 import BudgetFormModal from '../components/budgets/BudgetFormModal';
 import BudgetInsights from '../components/budgets/BudgetInsights';
 import EmptyState from '../components/ui/EmptyState';
+import { logActivity } from '../utils/activityLogger';
 
 export default function Budgets() {
   const [budgets, setBudgets] = useState(() => {
@@ -72,21 +73,28 @@ export default function Budgets() {
   const utilization = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
   const handleSaveBudget = (budgetData) => {
+    let settings = {};
+    try { settings = JSON.parse(localStorage.getItem('fintrack_settings') || '{}'); } catch {}
+    const currencySymbol = settings?.preferences?.currency?.match(/\((.*?)\)/)?.[1] || '$';
+
     const existingIndex = budgets.findIndex(b => b.category === budgetData.category);
     if (existingIndex >= 0) {
       // Edit
       const updatedBudgets = [...budgets];
       updatedBudgets[existingIndex] = budgetData;
       setBudgets(updatedBudgets);
+      logActivity('budget_update', 'Updated Budget', `${budgetData.category} budget adjusted to ${currencySymbol}${parseFloat(budgetData.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}`);
     } else {
       // Add
       setBudgets([...budgets, budgetData]);
+      logActivity('budget_add', 'Created Budget', `${budgetData.category} budget set to ${currencySymbol}${parseFloat(budgetData.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}`);
     }
   };
 
   const handleDeleteBudget = (category) => {
     if (window.confirm(`Are you sure you want to delete the budget for ${category}?`)) {
       setBudgets(budgets.filter(b => b.category !== category));
+      logActivity('budget_delete', 'Deleted Budget', `Removed budget for ${category}`);
     }
   };
 
