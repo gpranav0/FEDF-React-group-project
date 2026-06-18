@@ -169,8 +169,8 @@ export default function Analytics() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
-          <p className="text-slate-500 mt-1">Visualize your spending, savings, and budgeting trends.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Visualize your spending, savings, and budgeting trends.</p>
         </div>
         <button
           onClick={exportCSV}

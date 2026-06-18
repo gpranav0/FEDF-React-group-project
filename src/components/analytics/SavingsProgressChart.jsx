@@ -6,10 +6,10 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const d = payload[0].payload;
     return (
-      <div className="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-sm">
+      <div className="glass-panel px-4 py-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--chart-tooltip-bg)', borderColor: 'var(--chart-tooltip-border)', color: 'var(--chart-tooltip-text)' }}>
         <p className="font-semibold mb-1">{d.name}</p>
-        <p className="text-slate-300">Progress: {d.percentage.toFixed(1)}%</p>
-        <p className="text-slate-300">${d.current.toLocaleString()} / ${d.target.toLocaleString()}</p>
+        <p style={{ color: 'var(--chart-text)' }}>Progress: {d.percentage.toFixed(1)}%</p>
+        <p style={{ color: 'var(--chart-text)' }}>${d.current.toLocaleString()} / ${d.target.toLocaleString()}</p>
       </div>
     );
   }
@@ -19,9 +19,9 @@ const CustomTooltip = ({ active, payload }) => {
 export default function SavingsProgressChart({ data }) {
   if (!data || data.length === 0) {
     return (
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Savings Goals Progress</h3>
-        <div className="flex items-center justify-center h-64 text-slate-400 text-sm">No savings goals available</div>
+      <div className="glass-panel p-6 rounded-2xl h-full">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Savings Goals Progress</h3>
+        <div className="flex items-center justify-center h-64 text-slate-400 dark:text-slate-500 text-sm">No savings goals available</div>
       </div>
     );
   }
@@ -34,17 +34,17 @@ export default function SavingsProgressChart({ data }) {
   }));
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-shadow">
-      <h3 className="text-lg font-bold text-slate-900 mb-4">Savings Goals Progress</h3>
+    <div className="glass-panel p-6 rounded-2xl h-full card-hover hover:shadow-md transition-shadow">
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Savings Goals Progress</h3>
       <ResponsiveContainer width="100%" height={Math.max(chartData.length * 50 + 40, 200)}>
         <BarChart data={chartData} layout="vertical" barCategoryGap="30%">
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" horizontal={false} />
           <XAxis 
             type="number" 
             domain={[0, 100]} 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 12 }} 
+            tick={{ fill: 'var(--chart-text)', fontSize: 12 }} 
             tickFormatter={(val) => `${val}%`}
           />
           <YAxis 
@@ -52,10 +52,10 @@ export default function SavingsProgressChart({ data }) {
             dataKey="name" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#334155', fontSize: 13 }} 
+            tick={{ fill: 'var(--chart-text)', fontSize: 13 }} 
             width={120}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-glass-bg)' }} />
           <Bar dataKey="percentage" radius={[0, 6, 6, 0]} barSize={20}>
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

@@ -135,9 +135,9 @@ export default function SavingsGoals() {
           </div>
         </>
       ) : (
-        /* Empty State */
         <EmptyState
           icon={Target}
+          imageUrl="/empty_goals.png"
           title="No savings goals yet"
           description="Setting targets is the first step towards turning the invisible into the visible. Create a goal to start building your future."
           actionLabel="🎯 Create Your First Goal"

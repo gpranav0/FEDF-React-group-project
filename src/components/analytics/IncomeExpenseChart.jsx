@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-sm">
+      <div className="glass-panel px-4 py-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--chart-tooltip-bg)', borderColor: 'var(--chart-tooltip-border)', color: 'var(--chart-tooltip-text)' }}>
         <p className="font-semibold mb-2">{label}</p>
         {payload.map((entry, idx) => (
           <p key={idx} style={{ color: entry.color }} className="flex justify-between gap-4">
@@ -20,36 +20,36 @@ const CustomTooltip = ({ active, payload, label }) => {
 export default function IncomeExpenseChart({ data }) {
   if (!data || data.length === 0) {
     return (
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Income vs Expenses</h3>
-        <div className="flex items-center justify-center h-64 text-slate-400 text-sm">No data available</div>
+      <div className="glass-panel p-6 rounded-2xl h-full">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Income vs Expenses</h3>
+        <div className="flex items-center justify-center h-64 text-slate-400 dark:text-slate-500 text-sm">No data available</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-shadow">
-      <h3 className="text-lg font-bold text-slate-900 mb-4">Income vs Expenses</h3>
+    <div className="glass-panel p-6 rounded-2xl h-full card-hover hover:shadow-md transition-shadow">
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Income vs Expenses</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
           <XAxis 
             dataKey="month" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
+            tick={{ fill: 'var(--chart-text)', fontSize: 12 }}
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
+            tick={{ fill: 'var(--chart-text)', fontSize: 12 }}
             tickFormatter={(value) => `$${value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--chart-grid)', strokeWidth: 2 }} />
           <Legend 
             iconType="circle" 
             iconSize={8}
-            wrapperStyle={{ fontSize: '13px', color: '#64748b' }}
+            wrapperStyle={{ fontSize: '13px', color: 'var(--chart-text)' }}
           />
           <Line 
             type="monotone" 

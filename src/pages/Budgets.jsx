@@ -158,9 +158,9 @@ export default function Budgets() {
           </div>
         </>
       ) : (
-        /* Empty State */
         <EmptyState
           icon={PiggyBank}
+          imageUrl="/empty_budgets.png"
           title="No budgets set yet"
           description="Take control of your finances by setting monthly limits for different categories. We'll track your spending and help you stay on target."
           actionLabel="✨ Create Your First Budget"

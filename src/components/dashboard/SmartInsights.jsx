@@ -31,8 +31,8 @@ export default function SmartInsights() {
         title: 'Top Spending Category',
         description: `${topCat} accounts for ${pct}% of your total spending ($${topAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})})`,
         type: pct > 50 ? 'warning' : 'info',
-        color: pct > 50 ? 'border-amber-200 bg-amber-50/50' : 'border-blue-200 bg-blue-50/50',
-        iconColor: pct > 50 ? 'text-amber-500 bg-amber-100' : 'text-blue-500 bg-blue-100',
+        color: pct > 50 ? 'border-amber-200 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-900/20' : 'border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-900/20',
+        iconColor: pct > 50 ? 'text-amber-500 bg-amber-100 dark:bg-amber-900/40' : 'text-blue-500 bg-blue-100 dark:bg-blue-900/40',
       });
     }
 
@@ -57,8 +57,8 @@ export default function SmartInsights() {
           title: 'Budget Overspend Alert',
           description: `${overBudget.length} budget${overBudget.length > 1 ? 's' : ''} exceeded: ${overBudget.map(o => o.category).join(', ')}`,
           type: 'danger',
-          color: 'border-red-200 bg-red-50/50',
-          iconColor: 'text-red-500 bg-red-100',
+          color: 'border-red-200 dark:border-red-800/50 bg-red-50/50 dark:bg-red-900/20',
+          iconColor: 'text-red-500 bg-red-100 dark:bg-red-900/40',
         });
       } else {
         items.push({
@@ -66,8 +66,8 @@ export default function SmartInsights() {
           title: 'Budgets On Track',
           description: 'All your budgets are within their limits this month. Keep it up!',
           type: 'success',
-          color: 'border-emerald-200 bg-emerald-50/50',
-          iconColor: 'text-emerald-500 bg-emerald-100',
+          color: 'border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/50 dark:bg-emerald-900/20',
+          iconColor: 'text-emerald-500 bg-emerald-100 dark:bg-emerald-900/40',
         });
       }
     }
@@ -80,8 +80,8 @@ export default function SmartInsights() {
         title: 'Savings Opportunity',
         description: `Your savings rate is ${savingsRate.toFixed(1)}%. Aim for 20%+ by reducing discretionary spending.`,
         type: 'info',
-        color: 'border-purple-200 bg-purple-50/50',
-        iconColor: 'text-purple-500 bg-purple-100',
+        color: 'border-purple-200 dark:border-purple-800/50 bg-purple-50/50 dark:bg-purple-900/20',
+        iconColor: 'text-purple-500 bg-purple-100 dark:bg-purple-900/40',
       });
     } else if (savingsRate >= 20) {
       items.push({
@@ -89,8 +89,8 @@ export default function SmartInsights() {
         title: 'Great Savings Rate',
         description: `You're saving ${savingsRate.toFixed(1)}% of your income — above the recommended 20% target!`,
         type: 'success',
-        color: 'border-emerald-200 bg-emerald-50/50',
-        iconColor: 'text-emerald-500 bg-emerald-100',
+        color: 'border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/50 dark:bg-emerald-900/20',
+        iconColor: 'text-emerald-500 bg-emerald-100 dark:bg-emerald-900/40',
       });
     }
 
@@ -111,8 +111,8 @@ export default function SmartInsights() {
           title: 'Almost There!',
           description: `"${closestGoal.name}" is ${pct}% complete. Just $${remaining.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} to go.`,
           type: 'info',
-          color: 'border-indigo-200 bg-indigo-50/50',
-          iconColor: 'text-indigo-500 bg-indigo-100',
+          color: 'border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/50 dark:bg-indigo-900/20',
+          iconColor: 'text-indigo-500 bg-indigo-100 dark:bg-indigo-900/40',
         });
       }
     }
@@ -123,10 +123,10 @@ export default function SmartInsights() {
   if (insights.length === 0) return null;
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 card-hover animate-fade-in">
+    <div className="glass-panel p-6 rounded-2xl card-hover animate-fade-in">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-lg font-bold text-slate-900">Smart Insights</h3>
-        <div className="flex items-center gap-1 text-xs font-medium text-primary">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Smart Insights</h3>
+        <div className="flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
           <Lightbulb className="w-3.5 h-3.5" />
           <span>AI-Powered</span>
         </div>
@@ -142,8 +142,8 @@ export default function SmartInsights() {
                 <insight.icon className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-800 mb-1">{insight.title}</p>
-                <p className="text-xs text-slate-600 leading-relaxed">{insight.description}</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">{insight.title}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{insight.description}</p>
               </div>
             </div>
           </div>

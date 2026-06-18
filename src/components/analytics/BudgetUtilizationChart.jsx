@@ -12,8 +12,8 @@ export default function BudgetUtilizationChart({ percentage }) {
   ];
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-full hover:shadow-md transition-shadow flex flex-col">
-      <h3 className="text-lg font-bold text-slate-900 mb-4">Budget Utilization</h3>
+    <div className="glass-panel p-6 rounded-2xl h-full hover:shadow-md transition-shadow flex flex-col">
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Budget Utilization</h3>
       <div className="flex-1 flex flex-col items-center justify-center relative">
         <ResponsiveContainer width="100%" height={220}>
           <RadialBarChart
@@ -27,7 +27,7 @@ export default function BudgetUtilizationChart({ percentage }) {
             data={data}
           >
             <RadialBar
-              background={{ fill: '#f1f5f9' }}
+              background={{ fill: 'var(--color-glass-bg)' }}
               clockWise
               dataKey="value"
               cornerRadius={10}
@@ -35,11 +35,11 @@ export default function BudgetUtilizationChart({ percentage }) {
           </RadialBarChart>
         </ResponsiveContainer>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center" style={{ marginTop: '-10px' }}>
-          <p className="text-3xl font-bold text-slate-900">{clampedPercentage.toFixed(0)}%</p>
-          <p className="text-xs text-slate-500 mt-1">of budget used</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white">{clampedPercentage.toFixed(0)}%</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">of budget used</p>
         </div>
       </div>
-      <div className="flex justify-center gap-6 mt-2 text-xs text-slate-500">
+      <div className="flex justify-center gap-6 mt-2 text-xs text-slate-500 dark:text-slate-400">
         <span className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Under 70%
         </span>
