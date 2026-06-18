@@ -7,28 +7,31 @@ export default function InsightCard({ insight, index }) {
     switch (priority) {
       case 'warning':
         return {
-          border: 'border-amber-200/60 hover:border-amber-300',
-          bg: 'bg-gradient-to-br from-amber-50/80 to-orange-50/30',
-          iconBg: 'bg-gradient-to-br from-amber-400 to-orange-500',
-          iconColor: 'text-white',
-          glow: 'group-hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+          border: 'border-l-[3px] border-l-amber-500 border-slate-200/60',
+          hoverBorder: 'group-hover:border-slate-300',
+          iconBg: 'bg-amber-50 dark:bg-amber-500/10',
+          iconColor: 'text-amber-500 dark:text-amber-400',
+          shadow: 'shadow-sm shadow-slate-200/50 dark:shadow-none',
+          hoverGlow: 'group-hover:shadow-[0_8px_30px_-4px_rgba(245,158,11,0.15)] dark:group-hover:shadow-[0_8px_30px_-4px_rgba(245,158,11,0.05)]'
         };
       case 'success':
         return {
-          border: 'border-emerald-200/60 hover:border-emerald-300',
-          bg: 'bg-gradient-to-br from-emerald-50/80 to-teal-50/30',
-          iconBg: 'bg-gradient-to-br from-emerald-400 to-teal-500',
-          iconColor: 'text-white',
-          glow: 'group-hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+          border: 'border-l-[3px] border-l-emerald-500 border-slate-200/60',
+          hoverBorder: 'group-hover:border-slate-300',
+          iconBg: 'bg-emerald-50 dark:bg-emerald-500/10',
+          iconColor: 'text-emerald-500 dark:text-emerald-400',
+          shadow: 'shadow-sm shadow-slate-200/50 dark:shadow-none',
+          hoverGlow: 'group-hover:shadow-[0_8px_30px_-4px_rgba(16,185,129,0.15)] dark:group-hover:shadow-[0_8px_30px_-4px_rgba(16,185,129,0.05)]'
         };
       case 'info':
       default:
         return {
-          border: 'border-blue-200/60 hover:border-blue-300',
-          bg: 'bg-gradient-to-br from-blue-50/80 to-indigo-50/30',
-          iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-          iconColor: 'text-white',
-          glow: 'group-hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+          border: 'border-l-[3px] border-l-blue-500 border-slate-200/60',
+          hoverBorder: 'group-hover:border-slate-300',
+          iconBg: 'bg-blue-50 dark:bg-blue-500/10',
+          iconColor: 'text-blue-500 dark:text-blue-400',
+          shadow: 'shadow-sm shadow-slate-200/50 dark:shadow-none',
+          hoverGlow: 'group-hover:shadow-[0_8px_30px_-4px_rgba(59,130,246,0.15)] dark:group-hover:shadow-[0_8px_30px_-4px_rgba(59,130,246,0.05)]'
         };
     }
   };
@@ -40,15 +43,15 @@ export default function InsightCard({ insight, index }) {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
-      className={`relative group overflow-hidden p-4 rounded-xl border backdrop-blur-sm ${styles.border} ${styles.bg} transition-all duration-300 hover:-translate-y-1 ${styles.glow} cursor-default`}
+      className={`group relative overflow-hidden p-4 rounded-xl bg-white dark:bg-slate-800 border ${styles.border} ${styles.hoverBorder} ${styles.shadow} ${styles.hoverGlow} transition-all duration-300 hover:-translate-y-1 cursor-default`}
     >
-      <div className="flex items-start gap-3 relative z-10">
-        <div className={`p-2.5 rounded-xl ${styles.iconBg} ${styles.iconColor} shadow-sm flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-          {Icon && <Icon className="w-4 h-4" />}
+      <div className="flex items-start gap-3.5 relative z-10">
+        <div className={`p-2.5 rounded-xl ${styles.iconBg} ${styles.iconColor} flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+          {Icon && <Icon className="w-4 h-4" strokeWidth={2.5} />}
         </div>
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-sm font-bold text-slate-800 mb-1 leading-tight group-hover:text-slate-900 transition-colors">{title}</p>
-          <p className="text-xs text-slate-600 leading-relaxed font-medium">{description}</p>
+          <p className="text-sm font-bold text-slate-800 dark:text-white mb-1 leading-tight group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors">{title}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">{description}</p>
         </div>
       </div>
     </motion.div>
