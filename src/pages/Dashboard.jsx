@@ -1,194 +1,127 @@
-import { useMemo } from 'react';
-import { Wallet, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
-import StatCard from '../components/dashboard/StatCard';
-import RecentTransactions from '../components/dashboard/RecentTransactions';
-import SavingsProgressCard from '../components/dashboard/SavingsProgressCard';
-import FinancialHealthScore from '../components/dashboard/FinancialHealthScore';
-import QuickActions from '../components/dashboard/QuickActions';
-import ActivityTimeline from '../components/dashboard/ActivityTimeline';
-import InsightsPanel from '../components/dashboard/InsightsPanel';
-import DashboardHero from '../components/dashboard/DashboardHero';
+import React from 'react';
+import { Card } from '../components/ui/Card';
+import { ArrowUpRight, ArrowDownRight, Wallet, TrendingUp } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { useExpenses } from '../context/ExpenseContext';
+import { summaryData } from '../data/mockData';
 
-import DashboardPieChart from '../components/dashboard/DashboardPieChart';
-import DashboardSpendingTrend from '../components/dashboard/DashboardSpendingTrend';
-import DashboardIncomeExpenseChart from '../components/dashboard/DashboardIncomeExpenseChart';
-import DashboardSavingsGrowth from '../components/dashboard/DashboardSavingsGrowth';
-import DashboardAnalyticsSummary from '../components/dashboard/DashboardAnalyticsSummary';
+const chartData = [
+  { name: 'Jan', value: 4000 },
+  { name: 'Feb', value: 3000 },
+  { name: 'Mar', value: 2000 },
+  { name: 'Apr', value: 2780 },
+  { name: 'May', value: 1890 },
+  { name: 'Jun', value: 2390 },
+  { name: 'Jul', value: 3490 },
+];
 
-const MOCK_MONTHLY_INCOME = 8250;
+export function Dashboard() {
+  const { expenses } = useExpenses();
+  const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
 
-export default function Dashboard() {
-  // Load dynamic stats from localStorage
-  const stats = useMemo(() => {
-    let expenses = [];
-    let goals = [];
-    let settings = {};
-    try { expenses = JSON.parse(localStorage.getItem('fintrack_expenses') || '[]'); } catch (e) { console.error(e); }
-    try { goals = JSON.parse(localStorage.getItem('fintrack_goals') || '[]'); } catch (e) { console.error(e); }
-    try { settings = JSON.parse(localStorage.getItem('fintrack_settings') || '{}'); } catch (e) { console.error(e); }
-
-    const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
-    const totalSavings = goals.reduce((s, g) => s + g.currentAmount, 0);
-    const balance = MOCK_MONTHLY_INCOME - totalExpenses;
-    
-    // Generate simple mock sparkline data based on actual totals for visual effect
-    const generateSparkline = (base, variance, trend) => {
-      const data = [];
-      let current = base;
-      for (let i = 0; i < 7; i++) {
-        data.push({ value: current });
-        current += (Math.random() * variance * 2 - variance) + (trend * variance * 0.5);
-      }
-      return data;
-    };
-
-    const incomeSparkline = generateSparkline(100, 10, 1);
-    const expenseSparkline = generateSparkline(50, 15, -0.5);
-    const balanceSparkline = generateSparkline(75, 5, 1);
-    const savingsSparkline = generateSparkline(20, 2, 2);
-
-    // Extract symbol (e.g. "USD ($)" -> "$", "INR (₹)" -> "₹")
-    const prefCurrency = settings?.preferences?.currency || 'USD ($)';
-    const currencySymbol = prefCurrency.match(/\((.*?)\)/)?.[1] || '$';
-
-    return {
-      currencySymbol,
-      rawBalance: balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      rawSavings: totalSavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      income: `${currencySymbol}${MOCK_MONTHLY_INCOME.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
-      expenses: `${currencySymbol}${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      balance: `${currencySymbol}${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      savings: `${currencySymbol}${totalSavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      sparklines: {
-        income: incomeSparkline,
-        expenses: expenseSparkline,
-        balance: balanceSparkline,
-        savings: savingsSparkline
-      }
-    };
-  }, []);
+  const recentTransactions = [...expenses]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
 
   return (
-    <div className="space-y-6 pb-8">
-      {/* Section 1: Hero Banner */}
-      <DashboardHero 
-        balance={stats.rawBalance} 
-        savings={stats.rawSavings} 
-        currencySymbol={stats.currencySymbol} 
-      />
-
-      {/* Section 2: Quick Actions */}
-      <QuickActions />
-
-      {/* Section 3: Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-1">
-        <div className="animate-fade-in animate-stagger-1">
-          <StatCard 
-            title="Total Income" 
-            amount={stats.income}
-            icon={TrendingUp} 
-            trend="up" 
-            trendValue="12.5%" 
-            iconBg="bg-emerald-500 text-white" 
-            iconColor="" 
-            insight="Consistent with last month"
-            sparklineData={stats.sparklines.income}
-            sparklineColor="#10b981"
-          />
-        </div>
-        <div className="animate-fade-in animate-stagger-2">
-          <StatCard 
-            title="Total Expenses" 
-            amount={stats.expenses}
-            icon={TrendingDown} 
-            trend="down" 
-            trendValue="4.2%" 
-            iconBg="bg-red-500 text-white" 
-            iconColor="" 
-            insight="Below budget threshold"
-            sparklineData={stats.sparklines.expenses}
-            sparklineColor="#ef4444"
-          />
-        </div>
-        <div className="animate-fade-in animate-stagger-3">
-          <StatCard 
-            title="Current Balance" 
-            amount={stats.balance}
-            icon={Wallet} 
-            trend="up" 
-            trendValue="8.1%" 
-            iconBg="bg-blue-600 text-white" 
-            iconColor="" 
-            insight="Healthy cash flow"
-            sparklineData={stats.sparklines.balance}
-            sparklineColor="#2563eb"
-          />
-        </div>
-        <div className="animate-fade-in animate-stagger-4">
-          <StatCard 
-            title="Total Savings" 
-            amount={stats.savings}
-            icon={PiggyBank} 
-            trend="up" 
-            trendValue="2.4%" 
-            iconBg="bg-purple-500 text-white" 
-            iconColor="" 
-            insight="On track for goals"
-            sparklineData={stats.sparklines.savings}
-            sparklineColor="#a855f7"
-          />
-        </div>
-      </div>
-
-      {/* SECTION: Dedicated Financial Analytics */}
-      <div className="pt-6 mt-8 animate-fade-in">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900">Financial Analytics</h2>
-          <p className="text-sm text-slate-500">Comprehensive breakdown of your financial health</p>
-        </div>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500">Total Balance</p>
+              <p className="text-2xl font-bold text-slate-900">${(summaryData.totalIncome - totalExpenses).toFixed(2)}</p>
+            </div>
+            <div className="p-3 bg-indigo-50 rounded-full text-indigo-600">
+              <Wallet className="w-6 h-6" />
+            </div>
+          </div>
+        </Card>
         
-        <div className="space-y-6">
-          <DashboardAnalyticsSummary />
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <DashboardPieChart />
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500">Total Income</p>
+              <p className="text-2xl font-bold text-slate-900">${summaryData.totalIncome.toFixed(2)}</p>
             </div>
-            <div className="lg:col-span-2">
-              <DashboardIncomeExpenseChart />
+            <div className="p-3 bg-emerald-50 rounded-full text-emerald-600">
+              <ArrowUpRight className="w-6 h-6" />
             </div>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <DashboardSpendingTrend />
-            <DashboardSavingsGrowth />
+        </Card>
+        
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500">Total Expenses</p>
+              <p className="text-2xl font-bold text-slate-900">${totalExpenses.toFixed(2)}</p>
+            </div>
+            <div className="p-3 bg-rose-50 rounded-full text-rose-600">
+              <ArrowDownRight className="w-6 h-6" />
+            </div>
           </div>
-        </div>
+        </Card>
+        
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500">Total Savings</p>
+              <p className="text-2xl font-bold text-slate-900">${summaryData.savings.toFixed(2)}</p>
+            </div>
+            <div className="p-3 bg-blue-50 rounded-full text-blue-600">
+              <TrendingUp className="w-6 h-6" />
+            </div>
+          </div>
+        </Card>
       </div>
 
-      {/* Section 4: Financial Health & Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-6 mt-4">
-        <div className="lg:col-span-1">
-          <FinancialHealthScore />
-        </div>
-        <div className="lg:col-span-2">
-          <InsightsPanel />
-        </div>
-      </div>
-
-      {/* Section 5: Activity & Goals */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ActivityTimeline />
-        </div>
-        <div>
-          <SavingsProgressCard />
-        </div>
-      </div>
+        <Card className="lg:col-span-2">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Cash Flow</h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Area type="monotone" dataKey="value" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
 
-      {/* Section 6: Recent Transactions Table */}
-      <div className="grid grid-cols-1 gap-6">
-        <RecentTransactions />
+        <Card>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Recent Transactions</h3>
+          <div className="space-y-4">
+            {recentTransactions.length > 0 ? recentTransactions.map((tx) => (
+              <div key={tx.id} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="p-2 rounded-full mr-3 bg-rose-50 text-rose-600">
+                    <ArrowDownRight className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">{tx.title}</p>
+                    <p className="text-xs text-slate-500">{new Date(tx.date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-slate-900">
+                  {tx.amount.toFixed(2)}
+                </span>
+              </div>
+            )) : (
+              <p className="text-sm text-slate-500 text-center py-4">No recent transactions.</p>
+            )}
+          </div>
+        </Card>
       </div>
     </div>
   );
