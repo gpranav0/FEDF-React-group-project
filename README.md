@@ -1,16 +1,40 @@
-# React + Vite
+# Personal Finance Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A robust, production-ready React application for tracking expenses, managing budgets, setting savings goals, and generating complex financial analytics. Built with Vite and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
+- **Dashboard**: High-level overview of total income, expenses, and savings metrics.
+- **Expense Tracking**: Add, edit, and categorize daily expenses.
+- **Budget Planning**: Set monthly limits per category with automated warning alerts.
+- **Savings Goals**: Track milestones, contributions, and project completion dates.
+- **Reports & Analytics**: Advanced filtering, radar charts, composed cash-flow tracking, and PDF/CSV/Excel exports.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
+- **Framework**: React + Vite
+- **Styling**: Tailwind CSS v4
+- **State Management**: Context API + `useReducer`
+- **Persistence**: Local Storage
+- **Charts**: Recharts
+- **Testing**: Vitest + React Testing Library
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-## Expanding the ESLint configuration
+2. **Start Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. **Run Tests**:
+   ```bash
+   npm run test
+   ```
+
+4. **Build for Production**:
+   ```bash
+   npm run build
+   ```

@@ -1,7 +1,29 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/postcss'
+import { visualizer } from 'rollup-plugin-visualizer'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    visualizer({
+      filename: 'bundle-report.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    })
+  ],
+  css: {
+    postcss: {
+      plugins: [
+        tailwindcss(),
+      ],
+    },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.js',
+    css: true,
+  }
 })
