@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/postcss'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   base: './',
@@ -30,9 +29,6 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: {
-        index: fileURLToPath(new URL('./src/main.jsx', import.meta.url)),
-      },
       output: {
         entryFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name][extname]',
