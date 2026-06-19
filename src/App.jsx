@@ -28,7 +28,7 @@ function App() {
       <ExpenseProvider>
         <BudgetProvider>
           <SavingsProvider>
-            <BrowserRouter>
+            <BrowserRouter basename="/FEDF-React-group-project">
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Layout />}>

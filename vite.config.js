@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/postcss'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig({
+  base: '/FEDF-React-group-project/',
   plugins: [
     react(),
     visualizer({
