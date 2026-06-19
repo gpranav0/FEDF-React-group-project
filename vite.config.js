@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/postcss'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
-  base: '/FEDF-React-group-project/',
+  base: './',
   plugins: [
     react(),
     visualizer({
@@ -26,5 +27,16 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/tests/setup.js',
     css: true,
-  }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        index: fileURLToPath(new URL('./src/main.jsx', import.meta.url)),
+      },
+      output: {
+        entryFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name][extname]',
+      },
+    },
+  },
 })
